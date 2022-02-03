@@ -1,17 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { tap } from 'rxjs';
+import { ShoppingCartService } from 'src/app/shared/services/shopping-cart.service';
 import { Product } from './interfaces/product.interface';
 import { ProductsService } from './services/products.service';
 
 @Component({
   selector: 'app-products',
-  templateUrl: './products.component.html',
+  template: `
+    <section class="products">
+      <app-product (addToCartClick)="addToCart($event)" [product]="product" *ngFor="let product of products"></app-product>
+    </section>
+  `,
   styleUrls: ['./products.component.scss']
 })
 export class ProductsComponent implements OnInit {
   products!: Product[];
 
-  constructor(private productSvc: ProductsService) { }
+  constructor(private productSvc: ProductsService, private shoppingCartSvc: ShoppingCartService) { }
 
   ngOnInit(): void {
     this.productSvc.getProducts()
@@ -21,4 +26,7 @@ export class ProductsComponent implements OnInit {
       .subscribe();
   }
 
+  addToCart(product: Product): void {
+    this.shoppingCartSvc.updateCart(product);
+  }
 }
